@@ -1,0 +1,393 @@
+/* =====================================================
+   Dashboard Antrian Puskesmas Piyungan
+   Version : 1.1
+===================================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    background:#F4F7F6;
+
+    color:#333;
+
+}
+
+/* ================= HEADER ================= */
+
+.header{
+
+    background:linear-gradient(135deg,#2E7D32,#43A047);
+
+    color:white;
+
+    text-align:center;
+
+    padding:35px 20px;
+
+    box-shadow:0 4px 16px rgba(0,0,0,.18);
+
+}
+
+.logo{
+
+    font-size:60px;
+
+    margin-bottom:10px;
+
+}
+
+.header h1{
+
+    font-size:34px;
+
+    font-weight:700;
+
+    letter-spacing:1px;
+
+}
+
+.header h2{
+
+    margin-top:8px;
+
+    font-size:22px;
+
+    font-weight:500;
+
+}
+
+.subtitle{
+
+    margin-top:15px;
+
+    font-size:15px;
+
+    opacity:.95;
+
+}
+
+.clock{
+
+    margin-top:18px;
+
+    font-size:32px;
+
+    font-weight:600;
+
+}
+
+/* ================= GRID ================= */
+
+.cards{
+
+    max-width:1450px;
+
+    margin:35px auto;
+
+    padding:0 20px;
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+
+    gap:24px;
+
+}
+
+/* ================= CARD ================= */
+
+.card{
+
+    background:white;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+    transition:all .25s ease;
+
+}
+
+.card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 12px 28px rgba(0,0,0,.15);
+
+}
+
+/* Header Card */
+
+.card-header{
+
+    background:#2E7D32;
+
+    color:white;
+
+    padding:14px;
+
+    text-align:center;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    line-height:1.35;
+
+    min-height:72px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+/* Isi Card */
+
+.card-body{
+
+    padding:30px 15px;
+
+    text-align:center;
+
+}
+
+/* Nomor Antrian */
+
+.queue-number{
+
+    font-size:64px;
+
+    font-weight:700;
+
+    color:#1B5E20;
+
+    letter-spacing:2px;
+
+}
+
+/* Footer Card */
+
+.card-footer{
+
+    border-top:1px solid #EEEEEE;
+
+    padding:12px;
+
+    text-align:center;
+
+    color:#666;
+
+    font-size:14px;
+
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+
+    margin-top:20px;
+
+    padding:35px;
+
+    text-align:center;
+
+    background:white;
+
+    box-shadow:0 -3px 12px rgba(0,0,0,.08);
+
+}
+
+.update-title{
+
+    font-size:18px;
+
+    color:#666;
+
+}
+
+.update-time{
+
+    margin-top:10px;
+
+    font-size:34px;
+
+    font-weight:700;
+
+    color:#2E7D32;
+
+}
+
+.connection{
+
+    margin-top:20px;
+
+    font-size:20px;
+
+    font-weight:600;
+
+}
+
+.online{
+
+    color:#2E7D32;
+
+}
+
+.offline{
+
+    color:#B71C1C;
+
+}
+
+.refresh-info{
+
+    margin-top:12px;
+
+    color:#777;
+
+    font-size:15px;
+
+}
+
+/* ================= ANIMASI ================= */
+
+.card-update{
+
+    animation:pulse .35s ease;
+}
+
+@keyframes pulse{
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        transform:scale(1.03);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:992px){
+
+.cards{
+
+    grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(max-width:768px){
+
+.header{
+
+    padding:28px 15px;
+
+}
+
+.logo{
+
+    font-size:46px;
+
+}
+
+.header h1{
+
+    font-size:28px;
+
+}
+
+.header h2{
+
+    font-size:18px;
+
+}
+
+.clock{
+
+    font-size:24px;
+
+}
+
+.cards{
+
+    grid-template-columns:1fr;
+
+}
+
+.queue-number{
+
+    font-size:54px;
+
+}
+
+.card-header{
+
+    min-height:64px;
+
+    font-size:15px;
+
+}
+
+}
+
+/* ==========================================
+   WARNA SETIAP POLI
+========================================== */
+
+.card.pendaftaran .card-header{
+    background:#546E7A;
+}
+
+.card.kia .card-header{
+    background:#E91E63;
+}
+
+.card.umum .card-header{
+    background:#2E7D32;
+}
+
+.card.gigi .card-header{
+    background:#1976D2;
+}
+
+.card.ugd .card-header{
+    background:#D32F2F;
+}
+
+.card.fisioterapi .card-header{
+    background:#F57C00;
+}
+
+.card.psikologi .card-header{
+    background:#7B1FA2;
+}
+
+.card.infeksi .card-header{
+    background:#6D4C41;
+}

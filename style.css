@@ -1,393 +1,635 @@
 /* =====================================================
    Dashboard Antrian Puskesmas Piyungan
-   Version : 1.1
+   Version : 1.2
+   Schedule & Status Update
 ===================================================== */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body{
-
-    font-family:'Poppins',sans-serif;
-
-    background:#F4F7F6;
-
-    color:#333;
-
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #F4F7F6;
+    color: #333;
 }
 
-/* ================= HEADER ================= */
 
-.header{
+/* =====================================================
+   HEADER
+===================================================== */
 
-    background:linear-gradient(135deg,#2E7D32,#43A047);
-
-    color:white;
-
-    text-align:center;
-
-    padding:35px 20px;
-
-    box-shadow:0 4px 16px rgba(0,0,0,.18);
-
+.header {
+    background: linear-gradient(135deg, #2E7D32, #43A047);
+    color: white;
+    text-align: center;
+    padding: 35px 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18);
 }
 
-.logo{
-
-    font-size:60px;
-
-    margin-bottom:10px;
-
+.logo {
+    font-size: 60px;
+    margin-bottom: 10px;
 }
 
-.header h1{
-
-    font-size:34px;
-
-    font-weight:700;
-
-    letter-spacing:1px;
-
+.header h1 {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: 1px;
 }
 
-.header h2{
-
-    margin-top:8px;
-
-    font-size:22px;
-
-    font-weight:500;
-
+.header h2 {
+    margin-top: 8px;
+    font-size: 22px;
+    font-weight: 500;
 }
 
-.subtitle{
-
-    margin-top:15px;
-
-    font-size:15px;
-
-    opacity:.95;
-
+.subtitle {
+    margin-top: 15px;
+    font-size: 15px;
+    opacity: .95;
 }
 
-.clock{
-
-    margin-top:18px;
-
-    font-size:32px;
-
-    font-weight:600;
-
+.clock {
+    margin-top: 18px;
+    font-size: 32px;
+    font-weight: 600;
 }
 
-/* ================= GRID ================= */
 
-.cards{
+/* =====================================================
+   STATUS JADWAL ANTRIAN
+===================================================== */
 
-    max-width:1450px;
+.queue-schedule {
+    width: calc(100% - 40px);
+    max-width: 1200px;
 
-    margin:35px auto;
+    margin: 25px auto 10px;
 
-    padding:0 20px;
+    padding: 22px 28px;
 
-    display:grid;
+    display: flex;
+    align-items: center;
 
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap: 20px;
 
-    gap:24px;
+    border-radius: 18px;
 
+    box-sizing: border-box;
+
+    transition: all .3s ease;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.06);
 }
 
-/* ================= CARD ================= */
 
-.card{
+/* =====================================================
+   ICON STATUS
+===================================================== */
 
-    background:white;
+.schedule-icon {
+    width: 58px;
+    height: 58px;
 
-    border-radius:18px;
+    border-radius: 50%;
 
-    overflow:hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    box-shadow:0 8px 20px rgba(0,0,0,.08);
+    font-size: 28px;
 
-    transition:all .25s ease;
-
+    flex-shrink: 0;
 }
 
-.card:hover{
 
-    transform:translateY(-4px);
+/* =====================================================
+   ISI STATUS
+===================================================== */
 
-    box-shadow:0 12px 28px rgba(0,0,0,.15);
-
+.schedule-content {
+    flex: 1;
 }
 
-/* Header Card */
+.schedule-title {
+    font-size: 20px;
+    font-weight: 800;
 
-.card-header{
-
-    background:#2E7D32;
-
-    color:white;
-
-    padding:14px;
-
-    text-align:center;
-
-    font-size:16px;
-
-    font-weight:600;
-
-    line-height:1.35;
-
-    min-height:72px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
+    margin-bottom: 6px;
 }
 
-/* Isi Card */
-
-.card-body{
-
-    padding:30px 15px;
-
-    text-align:center;
-
+.schedule-message {
+    font-size: 15px;
+    line-height: 1.6;
 }
 
-/* Nomor Antrian */
+.schedule-hours {
+    margin-top: 8px;
 
-.queue-number{
+    font-size: 13px;
 
-    font-size:64px;
-
-    font-weight:700;
-
-    color:#1B5E20;
-
-    letter-spacing:2px;
-
+    opacity: .85;
 }
 
-/* Footer Card */
 
-.card-footer{
+/* =====================================================
+   STATUS : ONLINE / BUKA
+===================================================== */
 
-    border-top:1px solid #EEEEEE;
+.queue-schedule.open {
+    background:
+        linear-gradient(
+            135deg,
+            #edf9ef,
+            #ffffff
+        );
 
-    padding:12px;
+    border: 1px solid #c9e8ce;
 
-    text-align:center;
-
-    color:#666;
-
-    font-size:14px;
-
+    color: #176b2c;
 }
 
-/* ================= FOOTER ================= */
-
-.footer{
-
-    margin-top:20px;
-
-    padding:35px;
-
-    text-align:center;
-
-    background:white;
-
-    box-shadow:0 -3px 12px rgba(0,0,0,.08);
-
+.queue-schedule.open .schedule-icon {
+    background: #d8f2dc;
 }
 
-.update-title{
 
-    font-size:18px;
+/* =====================================================
+   STATUS : BELUM BUKA
+===================================================== */
 
-    color:#666;
+.queue-schedule.before {
+    background:
+        linear-gradient(
+            135deg,
+            #fff8e8,
+            #ffffff
+        );
 
+    border: 1px solid #f1dfad;
+
+    color: #795b12;
 }
 
-.update-time{
-
-    margin-top:10px;
-
-    font-size:34px;
-
-    font-weight:700;
-
-    color:#2E7D32;
-
+.queue-schedule.before .schedule-icon {
+    background: #fff0c5;
 }
 
-.connection{
 
-    margin-top:20px;
+/* =====================================================
+   STATUS : DITUTUP / LIBUR
+===================================================== */
 
-    font-size:20px;
+.queue-schedule.after,
+.queue-schedule.closed {
+    background:
+        linear-gradient(
+            135deg,
+            #fff0f0,
+            #ffffff
+        );
 
-    font-weight:600;
+    border: 1px solid #f0caca;
 
+    color: #8a2929;
 }
 
-.online{
-
-    color:#2E7D32;
-
+.queue-schedule.after .schedule-icon,
+.queue-schedule.closed .schedule-icon {
+    background: #ffe0e0;
 }
 
-.offline{
 
-    color:#B71C1C;
+/* =====================================================
+   GRID KARTU
+===================================================== */
 
+.cards {
+    max-width: 1450px;
+
+    margin: 35px auto;
+
+    padding: 0 20px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(280px, 1fr));
+
+    gap: 24px;
 }
 
-.refresh-info{
 
-    margin-top:12px;
+/* =====================================================
+   CARD
+===================================================== */
 
-    color:#777;
+.card {
+    background: white;
 
-    font-size:15px;
+    border-radius: 18px;
 
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.08);
+
+    transition: all .25s ease;
 }
 
-/* ================= ANIMASI ================= */
+.card:hover {
+    transform: translateY(-4px);
 
-.card-update{
-
-    animation:pulse .35s ease;
+    box-shadow:
+        0 12px 28px rgba(0,0,0,.15);
 }
 
-@keyframes pulse{
 
-    0%{
+/* =====================================================
+   HEADER CARD
+===================================================== */
 
-        transform:scale(1);
+.card-header {
+    background: #2E7D32;
 
+    color: white;
+
+    padding: 14px;
+
+    text-align: center;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    line-height: 1.35;
+
+    min-height: 72px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+/* =====================================================
+   ISI CARD
+===================================================== */
+
+.card-body {
+    padding: 30px 15px;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   NOMOR ANTRIAN
+===================================================== */
+
+.queue-number {
+    font-size: 64px;
+
+    font-weight: 700;
+
+    color: #1B5E20;
+
+    letter-spacing: 2px;
+}
+
+
+/* =====================================================
+   FOOTER CARD
+===================================================== */
+
+.card-footer {
+    border-top: 1px solid #EEEEEE;
+
+    padding: 12px;
+
+    text-align: center;
+
+    color: #666;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   FOOTER DASHBOARD
+===================================================== */
+
+.footer {
+    margin-top: 20px;
+
+    padding: 35px;
+
+    text-align: center;
+
+    background: white;
+
+    box-shadow:
+        0 -3px 12px rgba(0,0,0,.08);
+}
+
+.update-title {
+    font-size: 18px;
+
+    color: #666;
+}
+
+.update-time {
+    margin-top: 10px;
+
+    font-size: 34px;
+
+    font-weight: 700;
+
+    color: #2E7D32;
+}
+
+.connection {
+    margin-top: 20px;
+
+    font-size: 20px;
+
+    font-weight: 600;
+}
+
+.online {
+    color: #2E7D32;
+}
+
+.offline {
+    color: #B71C1C;
+}
+
+
+/* =====================================================
+   STATUS MENUNGGU DATA
+===================================================== */
+
+.connection.waiting {
+    color: #B77900;
+}
+
+
+/* =====================================================
+   INFO REFRESH
+===================================================== */
+
+.refresh-info {
+    margin-top: 12px;
+
+    color: #777;
+
+    font-size: 15px;
+}
+
+
+/* =====================================================
+   ANIMASI UPDATE
+===================================================== */
+
+.card-update {
+    animation: pulse .35s ease;
+}
+
+@keyframes pulse {
+
+    0% {
+        transform: scale(1);
     }
 
-    50%{
-
-        transform:scale(1.03);
-
+    50% {
+        transform: scale(1.03);
     }
 
-    100%{
-
-        transform:scale(1);
-
+    100% {
+        transform: scale(1);
     }
 
 }
 
-/* ================= RESPONSIVE ================= */
 
-@media(max-width:992px){
-
-.cards{
-
-    grid-template-columns:repeat(2,1fr);
-
-}
-
-}
-
-@media(max-width:768px){
-
-.header{
-
-    padding:28px 15px;
-
-}
-
-.logo{
-
-    font-size:46px;
-
-}
-
-.header h1{
-
-    font-size:28px;
-
-}
-
-.header h2{
-
-    font-size:18px;
-
-}
-
-.clock{
-
-    font-size:24px;
-
-}
-
-.cards{
-
-    grid-template-columns:1fr;
-
-}
-
-.queue-number{
-
-    font-size:54px;
-
-}
-
-.card-header{
-
-    min-height:64px;
-
-    font-size:15px;
-
-}
-
-}
-
-/* ==========================================
+/* =====================================================
    WARNA SETIAP POLI
-========================================== */
+===================================================== */
 
-.card.pendaftaran .card-header{
-    background:#546E7A;
+.card.pendaftaran .card-header {
+    background: #546E7A;
 }
 
-.card.kia .card-header{
-    background:#E91E63;
+.card.kia .card-header {
+    background: #E91E63;
 }
 
-.card.umum .card-header{
-    background:#2E7D32;
+.card.umum .card-header {
+    background: #2E7D32;
 }
 
-.card.gigi .card-header{
-    background:#1976D2;
+.card.gigi .card-header {
+    background: #1976D2;
 }
 
-.card.ugd .card-header{
-    background:#D32F2F;
+.card.ugd .card-header {
+    background: #D32F2F;
 }
 
-.card.fisioterapi .card-header{
-    background:#F57C00;
+.card.fisioterapi .card-header {
+    background: #F57C00;
 }
 
-.card.psikologi .card-header{
-    background:#7B1FA2;
+.card.psikologi .card-header {
+    background: #7B1FA2;
 }
 
-.card.infeksi .card-header{
-    background:#6D4C41;
+.card.infeksi .card-header {
+    background: #6D4C41;
 }
+
+
+/* =====================================================
+   RESPONSIVE TABLET
+===================================================== */
+
+@media (max-width: 992px) {
+
+    .cards {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+/* =====================================================
+   RESPONSIVE HP
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .header {
+        padding: 28px 15px;
+    }
+
+    .logo {
+        font-size: 46px;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    .header h2 {
+        font-size: 18px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+    }
+
+    .clock {
+        font-size: 24px;
+    }
+
+
+    /* Status jadwal */
+
+    .queue-schedule {
+
+        width: calc(100% - 24px);
+
+        margin: 16px auto 8px;
+
+        padding: 18px;
+
+        gap: 14px;
+
+        border-radius: 15px;
+    }
+
+    .schedule-icon {
+
+        width: 48px;
+        height: 48px;
+
+        font-size: 23px;
+    }
+
+    .schedule-title {
+        font-size: 17px;
+    }
+
+    .schedule-message {
+        font-size: 13px;
+    }
+
+    .schedule-hours {
+        font-size: 12px;
+    }
+
+
+    /* Grid */
+
+    .cards {
+        grid-template-columns: 1fr;
+
+        margin-top: 25px;
+    }
+
+
+    /* Nomor */
+
+    .queue-number {
+        font-size: 54px;
+    }
+
+
+    /* Header kartu */
+
+    .card-header {
+
+        min-height: 64px;
+
+        font-size: 15px;
+    }
+
+
+    /* Footer */
+
+    .footer {
+        padding: 28px 15px;
+    }
+
+    .update-time {
+        font-size: 28px;
+    }
+
+    .connection {
+        font-size: 18px;
+    }
+
+}
+
+
+/* =====================================================
+   HP KECIL
+===================================================== */
+
+@media (max-width: 480px) {
+
+    .header h1 {
+        font-size: 25px;
+    }
+
+    .header h2 {
+        font-size: 17px;
+    }
+
+    .subtitle {
+        font-size: 13px;
+    }
+
+    .clock {
+        font-size: 22px;
+    }
+
+    .queue-schedule {
+        padding: 16px;
+    }
+
+    .schedule-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 21px;
+    }
+
+    .schedule-title {
+        font-size: 16px;
+    }
+
+    .schedule-message {
+        font-size: 12px;
+    }
+
+    .schedule-hours {
+        font-size: 11px;
+    }
+
+    .queue-number {
+        font-size: 48px;
+    }
+
+}
+
+
+/* =====================================================
+   AKHIR STYLE
+===================================================== */

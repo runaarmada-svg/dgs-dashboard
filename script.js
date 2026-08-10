@@ -1,112 +1,504 @@
 /* ======================================================
    Dashboard Antrian Puskesmas Piyungan
-   Version : 2.2
+   Version : 3.0
+   Schedule : Senin-Sabtu
 ====================================================== */
 
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzDSCls-ES8YilCo22T9MS1WsiELYP6mrz96HmN6mmIfh_JBsWJMOtzLcWec3TutLdPWQ/exec";
 
+const REFRESH_INTERVAL = 30000;
+
 let oldData = {};
+let lastValidData = null;
+
 
 /* ======================================================
-   Warna Otomatis Setiap Poli
+   JADWAL ANTRIAN
 ====================================================== */
 
-function getCardClass(poli) {
+function getSchedule() {
 
-    poli = poli.toUpperCase();
+    const now = new Date();
 
-    if (poli.includes("PENDAFTARAN")) return "pendaftaran";
+    // Paksa menggunakan WIB
+    const wibString = now.toLocaleString("en-US", {
+        timeZone: "Asia/Jakarta"
+    });
 
-    if (poli.includes("KIA")) return "kia";
+    const wib = new Date(wibString);
 
-    if (poli.includes("UMUM")) return "umum";
+    const day = wib.getDay();
+    const hour = wib.getHours();
+    const minute = wib.getMinutes();
 
-    if (poli.includes("GIGI")) return "gigi";
+    const currentMinutes = hour * 60 + minute;
 
-    if (poli.includes("UGD")) return "ugd";
+    /*
+        Minggu
+        0 = Sunday
+    */
 
-    if (poli.includes("FISIOTERAPI")) return "fisioterapi";
+    if (day === 0) {
 
-    if (poli.includes("PSIKOLOGI")) return "psikologi";
+        return {
+            status: "closed",
+            title: "ANTRIAN ONLINE DITUTUP",
+            message: "Hari Minggu layanan antrean online libur.",
+            open: null,
+            close: null
+        };
 
-    if (poli.includes("INFEKSI")) return "infeksi";
+    }
 
-    return "";
+    /*
+        Senin - Kamis
+        07:00 - 11:00
+    */
+
+    if (day >= 1 && day <= 4) {
+
+        return createSchedule(
+            currentMinutes,
+            7 * 60,
+            11 * 60
+        );
+
+    }
+
+    /*
+        Jumat - Sabtu
+        07:00 - 10:00
+    */
+
+    if (day === 5 || day === 6) {
+
+        return createSchedule(
+            currentMinutes,
+            7 * 60,
+            10 * 60
+        );
+
+    }
+
 }
 
+
 /* ======================================================
-   Render Card
+   MEMBUAT STATUS JADWAL
+====================================================== */
+
+function createSchedule(currentMinutes, openMinutes, closeMinutes) {
+
+    const openTime = formatMinutes(openMinutes);
+    const closeTime = formatMinutes(closeMinutes);
+
+    // Belum buka
+    if (currentMinutes < openMinutes) {
+
+        return {
+
+            status: "before",
+
+            title: "ANTRIAN ONLINE BELUM DIBUKA",
+
+            message:
+                `Pendaftaran antrean online dibuka pukul ${openTime} WIB.`,
+
+            open: openTime,
+            close: closeTime
+
+        };
+
+    }
+
+    // Sudah tutup
+    if (currentMinutes >= closeMinutes) {
+
+        return {
+
+            status: "after",
+
+            title: "ANTRIAN ONLINE DITUTUP",
+
+            message:
+                `Antrean online hari ini telah ditutup pada pukul ${closeTime} WIB.`,
+
+            open: openTime,
+            close: closeTime
+
+        };
+
+    }
+
+    // Sedang buka
+    return {
+
+        status: "open",
+
+        title: "ANTRIAN ONLINE AKTIF",
+
+        message:
+            `Antrean online dibuka sampai pukul ${closeTime} WIB.`,
+
+        open: openTime,
+        close: closeTime
+
+    };
+
+}
+
+
+/* ======================================================
+   FORMAT JAM
+====================================================== */
+
+function formatMinutes(minutes) {
+
+    const hour =
+        Math.floor(minutes / 60)
+        .toString()
+        .padStart(2, "0");
+
+    const minute =
+        (minutes % 60)
+        .toString()
+        .padStart(2, "0");
+
+    return `${hour}:${minute}`;
+
+}
+
+
+/* ======================================================
+   JAM WIB
+====================================================== */
+
+function getWIBTime() {
+
+    return new Date().toLocaleTimeString(
+        "id-ID",
+        {
+            timeZone: "Asia/Jakarta",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        }
+    );
+
+}
+
+
+/* ======================================================
+   STATUS BANNER
+====================================================== */
+
+function createStatusBanner() {
+
+    let banner =
+        document.getElementById("queueSchedule");
+
+    if (!banner) {
+
+        banner = document.createElement("div");
+
+        banner.id = "queueSchedule";
+
+        const cards =
+            document.getElementById("cards");
+
+        if (cards) {
+
+            cards.parentNode.insertBefore(
+                banner,
+                cards
+            );
+
+        } else {
+
+            document.body.prepend(banner);
+
+        }
+
+    }
+
+    return banner;
+
+}
+
+
+/* ======================================================
+   TAMPILKAN STATUS JADWAL
+====================================================== */
+
+function renderSchedule() {
+
+    const schedule =
+        getSchedule();
+
+    const banner =
+        createStatusBanner();
+
+    banner.className =
+        "queue-schedule " + schedule.status;
+
+    let icon = "🟢";
+
+    if (schedule.status === "before") {
+        icon = "🕖";
+    }
+
+    if (schedule.status === "after") {
+        icon = "🔴";
+    }
+
+    if (schedule.status === "closed") {
+        icon = "🔴";
+    }
+
+    banner.innerHTML = `
+
+        <div class="schedule-icon">
+            ${icon}
+        </div>
+
+        <div class="schedule-content">
+
+            <div class="schedule-title">
+                ${schedule.title}
+            </div>
+
+            <div class="schedule-message">
+                ${schedule.message}
+            </div>
+
+            ${
+                schedule.open
+                ?
+                `
+                <div class="schedule-hours">
+                    Jam layanan online:
+                    <strong>
+                        ${schedule.open} - ${schedule.close} WIB
+                    </strong>
+                </div>
+                `
+                :
+                `
+                <div class="schedule-hours">
+                    <strong>
+                        Layanan antrean online tutup setiap Minggu
+                    </strong>
+                </div>
+                `
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+/* ======================================================
+   CEK APAKAH SEDANG BUKA
+====================================================== */
+
+function isQueueOpen() {
+
+    return getSchedule().status === "open";
+
+}
+
+
+/* ======================================================
+   RENDER KARTU POLI
 ====================================================== */
 
 function renderCards(data) {
 
-    const container = document.getElementById("cards");
+    const container =
+        document.getElementById("cards");
+
+    if (!container) return;
+
+    /*
+        Kalau layanan tutup,
+        jangan tampilkan nomor antrean.
+    */
+
+    if (!isQueueOpen()) {
+
+        container.innerHTML = "";
+
+        return;
+
+    }
 
     container.innerHTML = "";
 
-    Object.entries(data).forEach(([poli, nomor]) => {
+    Object.entries(data).forEach(
+        ([poli, nomor]) => {
 
-        if (poli === "lastUpdate") return;
+            if (poli === "lastUpdate") return;
 
-        const changed =
-            oldData[poli] &&
-            oldData[poli] !== nomor;
+            const changed =
+                oldData[poli] &&
+                oldData[poli] !== nomor;
 
-        const cardClass = getCardClass(poli);
+            container.innerHTML += `
 
-        container.innerHTML += `
-            <div class="card ${cardClass} ${changed ? "card-update" : ""}">
+                <div class="card ${changed ? "card-update" : ""}">
 
-                <div class="card-header">
-                    ${poli}
-                </div>
+                    <div class="card-header">
+                        ${poli}
+                    </div>
 
-                <div class="card-body">
+                    <div class="card-body">
 
-                    <div class="queue-number">
-                        ${nomor}
+                        <div class="queue-number">
+                            ${nomor}
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer">
+
+                        Update ${data.lastUpdate || "--"}
+
                     </div>
 
                 </div>
 
-                <div class="card-footer">
-                    Update ${data.lastUpdate}
-                </div>
+            `;
 
-            </div>
-        `;
+        }
+    );
 
-    });
-
-    oldData = { ...data };
+    oldData = {
+        ...data
+    };
 
 }
 
+
 /* ======================================================
-   Ambil Data dari Apps Script
+   LOAD DATA DARI GOOGLE APPS SCRIPT
 ====================================================== */
 
 async function loadQueue() {
 
+    /*
+        Saat tutup, tidak perlu mengambil data
+        terus-menerus.
+    */
+
+    if (!isQueueOpen()) {
+
+        renderSchedule();
+
+        renderCards({});
+
+        document.getElementById("connection").textContent =
+            "🔴 LAYANAN TUTUP";
+
+        document.getElementById("connection").className =
+            "connection offline";
+
+        return;
+
+    }
+
+
     try {
 
-        const response = await fetch(API_URL, {
-            method: "GET",
-            cache: "no-store",
-            redirect: "follow"
-        });
+        const response =
+            await fetch(
+                API_URL + "?t=" + Date.now(),
+                {
+                    method: "GET",
+                    cache: "no-store",
+                    redirect: "follow"
+                }
+            );
 
         if (!response.ok) {
-            throw new Error("HTTP " + response.status);
+
+            throw new Error(
+                "HTTP " + response.status
+            );
+
         }
 
-        const data = await response.json();
+        const data =
+            await response.json();
+
+
+        /*
+            Proteksi tambahan:
+            jangan menganggap response kosong
+            sebagai data valid.
+        */
+
+        const poliCount =
+            Object.keys(data)
+                .filter(
+                    key => key !== "lastUpdate"
+                )
+                .length;
+
+
+        if (poliCount === 0) {
+
+            console.warn(
+                "API mengembalikan data poli kosong."
+            );
+
+            /*
+                Jika sebelumnya memiliki data valid,
+                pertahankan tampilan terakhir.
+            */
+
+            if (lastValidData) {
+
+                renderCards(
+                    lastValidData
+                );
+
+            }
+
+            document.getElementById("connection").textContent =
+                "🟡 MENUNGGU DATA";
+
+            document.getElementById("connection").className =
+                "connection waiting";
+
+            return;
+
+        }
+
+
+        /*
+            Data valid
+        */
+
+        lastValidData = {
+            ...data
+        };
 
         renderCards(data);
 
-        document.getElementById("lastUpdate").textContent =
-            data.lastUpdate + " WIB";
+
+        if (data.lastUpdate) {
+
+            document.getElementById(
+                "lastUpdate"
+            ).textContent =
+                data.lastUpdate + " WIB";
+
+        }
+
 
         document.getElementById("connection").textContent =
             "🟢 ONLINE";
@@ -114,41 +506,110 @@ async function loadQueue() {
         document.getElementById("connection").className =
             "connection online";
 
-    } catch (err) {
 
-        console.error(err);
+    }
+
+    catch (err) {
+
+        console.error(
+            "Gagal mengambil data:",
+            err
+        );
+
+
+        /*
+            Jangan langsung menghilangkan
+            data terakhir.
+        */
+
+        if (lastValidData) {
+
+            renderCards(
+                lastValidData
+            );
+
+        }
+
 
         document.getElementById("connection").textContent =
-            "🔴 OFFLINE";
+            "🟡 MENUNGGU KONEKSI";
 
         document.getElementById("connection").className =
-            "connection offline";
+            "connection waiting";
+
     }
+
 }
 
+
 /* ======================================================
-   Jam Digital
+   JAM UTAMA
 ====================================================== */
 
 function updateClock() {
 
-    const now = new Date();
+    const clock =
+        document.getElementById("clock");
 
-    const time = now.toLocaleTimeString("id-ID", {
-        hour12: false
-    });
+    if (!clock) return;
 
-    document.getElementById("clock").textContent =
-        time + " WIB";
+    clock.textContent =
+        getWIBTime() + " WIB";
 
 }
 
+
 /* ======================================================
-   Start
+   REFRESH STATUS
+====================================================== */
+
+function refreshDashboard() {
+
+    renderSchedule();
+
+    loadQueue();
+
+}
+
+
+/* ======================================================
+   START
 ====================================================== */
 
 updateClock();
-setInterval(updateClock, 1000);
 
-loadQueue();
-setInterval(loadQueue, 30000);
+renderSchedule();
+
+refreshDashboard();
+
+
+/*
+    Jam diperbarui setiap detik.
+*/
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/*
+    Status buka/tutup dicek setiap detik.
+    Jadi tepat pukul 07:00 atau 11:00
+    dashboard langsung berubah.
+*/
+
+setInterval(
+    renderSchedule,
+    1000
+);
+
+
+/*
+    Data antrean diperbarui setiap 30 detik.
+*/
+
+setInterval(
+    loadQueue,
+    REFRESH_INTERVAL
+);

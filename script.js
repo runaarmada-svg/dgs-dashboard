@@ -11,6 +11,55 @@ const REFRESH_INTERVAL = 30000;
 
 let oldData = {};
 let lastValidData = null;
+/* ======================================================
+   WARNA SETIAP POLI
+====================================================== */
+
+function getCardClass(poli) {
+
+    const name = poli
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+
+    if (name.includes("pendaftaran")) {
+        return "pendaftaran";
+    }
+
+    if (name.includes("kia")) {
+        return "kia";
+    }
+
+    if (name.includes("umum")) {
+        return "umum";
+    }
+
+    if (name.includes("gigi")) {
+        return "gigi";
+    }
+
+    if (name.includes("ugd")) {
+        return "ugd";
+    }
+
+    if (name.includes("fisioterapi")) {
+        return "fisioterapi";
+    }
+
+    if (name.includes("psikologi")) {
+        return "psikologi";
+    }
+
+    if (name.includes("infeksi")) {
+        return "infeksi";
+    }
+
+    if (name.includes("lansia")) {
+        return "lansia";
+    }
+
+    return "";
+}
 
 
 /* ======================================================
@@ -349,7 +398,7 @@ function renderCards(data) {
 
             container.innerHTML += `
 
-                <div class="card ${changed ? "card-update" : ""}">
+                <div class="card ${getCardClass(poli)} ${changed ? "card-update" : ""}">
 
                     <div class="card-header">
                         ${poli}
